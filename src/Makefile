@@ -1,8 +1,27 @@
 
-CC=clang++
+CC=clang
+CXX=clang++
 #CFLAGS= -Wc++11-extensions -std=c++11 -F/Library/Frameworks
-CFLAGS= -std=c++11 -F/Library/Frameworks
+CXXFLAGS= -std=c++11
+CFLAGS= -F/Library/Frameworks
 LIBS=-framework SDL2
 
-all:
-	$(CC) $(CFLAGS) -o tinysim.lib *.cpp $(LIBS)
+
+CFILES=tinysim.c
+
+OBJS=$(CFILES:.c=.o)
+
+all: tinysim.lib
+	$(CXX) $(CFLAGS) $(CXXFLAGS) -o tinytest main.cpp tinysim.lib $(LIBS)
+
+
+tinysim.lib: $(OBJS)
+	$(AR) rcs tinysim.lib $(OBJS)
+
+%.o: %.c
+	$(CC) -c -o $@ $(CFLAGS) $<
+
+
+
+clean:
+	rm -f tinysim.lib tinytest $(OBJS)
