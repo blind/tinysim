@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS= -O0 -g -std=c11 -F/Library/Frameworks
+CFLAGS= -O0 -g -std=c11 -Wextra -Wall -F/Library/Frameworks
 LIBS=-framework SDL2
 
 
@@ -16,7 +16,6 @@ tinysim.lib: $(OBJS)
 %.o: %.c
 	$(CC) -c -o $@ $(CFLAGS) $<
 
-
-
 clean:
 	rm -f tinysim.lib tinytest $(OBJS)
+

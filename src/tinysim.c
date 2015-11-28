@@ -8,7 +8,6 @@
 
 
 static SDL_Window *window;
-static SDL_Renderer *renderer;
 static SDL_Surface *surface;
 
 static void TinySimQuit();
@@ -30,8 +29,6 @@ int TinySimRun( GameUpdateFunc gameFunction )
 	int done = 0;
 	while( !done )
 	{
-		// TODO: Add timer for sleeping 16.7 ms
-
 		uint32_t start = SDL_GetTicks();
 		gameFunction();
 
@@ -126,8 +123,6 @@ static int TinySimInit()
 		fprintf(stderr, "Could not initialize SDL");
 		return 1;
 	}
-
-	//int ok = SDL_CreateWindowAndRenderer( 96*4, 64*4, SDL_WINDOW_SHOWN, &window, &renderer );
 
 	window = SDL_CreateWindow( "TinySim"
 		, SDL_WINDOWPOS_UNDEFINED
