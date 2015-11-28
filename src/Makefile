@@ -1,8 +1,5 @@
-
-CC=clang
-CXX=clang++
-#CFLAGS= -std=c11 -F/Library/Frameworks
-CFLAGS= -std=c11 -F/Library/Frameworks
+CC=gcc
+CFLAGS= -O0 -g -std=c11 -F/Library/Frameworks
 LIBS=-framework SDL2
 
 
@@ -12,7 +9,6 @@ OBJS=$(CFILES:.c=.o)
 
 all: tinysim.lib
 	$(CC) $(CFLAGS) -o tinytest main.c tinysim.lib $(LIBS)
-
 
 tinysim.lib: $(OBJS)
 	$(AR) rcs tinysim.lib $(OBJS)
