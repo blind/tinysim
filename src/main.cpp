@@ -1,10 +1,9 @@
-#include <SDL2/SDL.h>
 #include "tinysim.h"
 
 #include <stdio.h>
 #include <stdint.h>
-
-static uint16_t myFrameBuffer [96*64];
+#include <stdlib.h>
+#include <memory.h>
 
 #define STAR_COUNT 100
 
@@ -16,6 +15,9 @@ struct Star
 };
 
 static struct Star stars[STAR_COUNT];
+
+
+static uint16_t myFrameBuffer [96*64];
 
 
 static void clearscreen()
@@ -35,7 +37,7 @@ static void DrawStars()
 	}
 }
 
-static void MyGameUpdate()
+void loop()
 {
 	clearscreen();
 
@@ -44,7 +46,7 @@ static void MyGameUpdate()
 	TinySimDrawFrameBuffer( myFrameBuffer, 0 );
 }
 
-static void InitMyGame()
+void setup()
 {
 	for( int i = 0; i < STAR_COUNT; ++i )
 	{
@@ -52,20 +54,5 @@ static void InitMyGame()
 		stars[i].y = rand() & 0x3f;
 		stars[i].speed = rand() & 0x3ff;
 	}
-}
-
-
-int main(void)
-{
-	InitMyGame();
-
-	int result = TinySimRun( MyGameUpdate );
-
-	if( result != 0 )
-	{
-		printf("Could not start Tiny Sim\n");
-		return 0;
-	}
-	return 0;
 }
 

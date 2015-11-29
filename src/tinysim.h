@@ -6,12 +6,10 @@ extern "C" {
 #endif
 
 
-typedef void (*GameUpdateFunc)();
-
-// Call gameUpdate function 60 times/sec
+// Call loop() function 60 times/sec
 // return 0 if the game was run and exited ok.
 // return 1 if the initialization failed.
-extern int TinySimRun( GameUpdateFunc gameUpdate );
+extern int TinySimRun( );
 
 // Read input.
 // bit 0 - button b
@@ -22,6 +20,9 @@ extern void TinySimGetInput( int *left, int *right, int *buttons);
 // mode 0 > 16 bitperpixel
 // mode 1 > 8 bit per pixel 3,3,2
 extern void TinySimDrawFrameBuffer( const void* buffer, int mode );
+
+// Simulate the Delay function of arduino
+extern void TinySimDelay( int milliSecs );
 
 #ifdef __cplusplus
 }

@@ -17,7 +17,25 @@ static void TinySimBlit16( const uint16_t* );
 
 static int scale = 3;
 
-int TinySimRun( GameUpdateFunc gameFunction )
+
+extern void loop();
+extern void setup();
+
+
+int main(void)
+{
+	int result = TinySimRun( );
+
+	if( result != 0 )
+	{
+		printf("Could not start Tiny Sim\n");
+		return 0;
+	}
+	return 0;
+}
+
+
+int TinySimRun( )
 {
 	// Call gameFunction 60 times/s and stuff.
 
@@ -26,11 +44,13 @@ int TinySimRun( GameUpdateFunc gameFunction )
 		return 1;
 	}
 
+	setup();
+
 	int done = 0;
 	while( !done )
 	{
 		uint32_t start = SDL_GetTicks();
-		gameFunction();
+		loop();
 
 		SDL_Surface *dstSurface = SDL_GetWindowSurface(window);
 		SDL_BlitScaled( surface, NULL, dstSurface, NULL );
