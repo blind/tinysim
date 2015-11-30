@@ -3,10 +3,10 @@
 
 #include <stdint.h>
 
-class Wire_t
+class SimWire
 {
 public:
-	Wire_t();
+	SimWire();
 	void begin();
 	void beginTransmission(uint32_t lala);
 	void endTransmission();
@@ -17,7 +17,7 @@ public:
 
 extern uint8_t TWBR;
 
-extern Wire_t Wire;
+extern SimWire Wire;
 
 
 #endif

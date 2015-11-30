@@ -20,14 +20,14 @@ public:
 };
 
 
-class  Serial_t
+class  SimSerial
 {
 public:
 	void begin(uint32_t speed);
 	void println(uint32_t speed);
 };
 
-extern Serial_t Serial;
+extern SimSerial Serial;
 
 //extern void putString(int row, int col, int color, const char* msg, const FONT_INFO fontInfo);
 

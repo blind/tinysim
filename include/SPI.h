@@ -5,10 +5,10 @@
 
 class DataRegister;
 
-class SPI_t
+class SimSPI
 {
 public:
-	SPI_t();
+	SimSPI();
 
 	void begin();
 	void transfer( uint8_t something );
@@ -29,17 +29,17 @@ public:
 class DataRegister
 {
 public:
-	DataRegister( SPI_t* owner) { this->spi = owner; }
+	DataRegister( SimSPI* owner) { this->spi = owner; }
 	void operator=(uint8_t data)
 	{
 		spi->writeReg( this, data );
 	}
 
 private:
-	SPI_t* spi;
+	SimSPI* spi;
 };
 
-extern SPI_t SPI;
+extern SimSPI SPI;
 
 
 #define SPI_MODE0 0
