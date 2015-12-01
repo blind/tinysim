@@ -5,7 +5,7 @@
 #include <stdint.h>
 
 #include "tinysim.h"
-
+#include "simssd1331.h"
 
 static SDL_Window *window;
 static SDL_Surface *surface;
@@ -22,8 +22,12 @@ extern void loop();
 extern void setup();
 
 
+SimSSD1331 _simDisplay;
+
 int main(void)
 {
+	SPI.AddDevice( &_simDisplay );
+
 	int result = TinySimRun( );
 
 	if( result != 0 )

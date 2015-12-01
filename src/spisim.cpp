@@ -8,12 +8,34 @@
 #include "Wire.h"
 #include "Arduino.h"
 
+SimSerial Serial;
 SimSPI SPI;
 SimWire Wire;
+
+
+// This should be moved into SimWire class and accessed through macro.
+uint8_t TWBR;
+
 
 SimSPI::SimSPI()
 : SPI_dataReg( new DataRegister(this) )
 {
+	devicesArraySize = 4;
+	devices = new ISPIDevice*[devicesArraySize];
+}
+
+
+void SimSPI::AddDevice( ISPIDevice *device )
+{
+	int i = 0;
+	while( (i < devicesArraySize) && (devices[i] == NULL) )
+		i++;
+
+	if( i < devicesArraySize )
+	{
+		devices[i] = device;
+		currentSlave = device;
+	}
 }
 
 void SimSPI::begin()
@@ -23,6 +45,10 @@ void SimSPI::begin()
 
 void SimSPI::transfer( uint8_t data )
 {
+	if( currentSlave )
+	{
+		currentSlave->spiSlaveWrite( data );
+	}
 //	printf( "SPI: sending %02x \n", data );
 }
 
@@ -42,13 +68,10 @@ void SimSPI::writeReg( DataRegister *reg, uint8_t data)
 {
 	if( reg == SPI_dataReg )
 	{
-		//printf("Write data: %02x\n", data);
+		currentSlave->spiSlaveWrite( data );
 	}
 }
 
-
-
-uint8_t TWBR;
 
 SimWire::SimWire()
 {
@@ -60,9 +83,9 @@ void SimWire::begin()
 
 }
 
-void SimWire::beginTransmission(uint32_t lala)
+void SimWire::beginTransmission(uint32_t data)
 {
-	printf("[SimWire::beginTransmission] $%02x\n", lala);
+	printf("[SimWire::beginTransmission] $%02x\n", data);
 }
 
 void SimWire::endTransmission()
@@ -81,8 +104,9 @@ uint8_t SimWire::read()
 }
 
 
-void SimWire::write(uint8_t)
+void SimWire::write(uint8_t data)
 {
+	printf("[SimWire::write] $%02x\n", data);
 }
 
 
@@ -97,9 +121,6 @@ void SimSerial::println(uint32_t intValue)
 {
 	printf( "[Serial::println] %d\n", intValue );
 }
-
-SimSerial Serial;
-
 
 
 

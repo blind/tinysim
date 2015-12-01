@@ -3,16 +3,23 @@
 
 #include <stdint.h>
 
-class SimSSD1331
+#include "SPI.h"
+
+class SimSSD1331 : public ISPIDevice
 {
 public:
+	SimSSD1331();
+
+
 	// Write data to SPI slave, return data written by slave.
-	uint8_t spiSlaveWrite( uint8_t );
+	virtual uint8_t spiSlaveWrite( uint8_t );
 
 private:
 
 	// Control register
 
+
+	uint8_t expectedByteCount;
 
 	uint8_t currentCommand; // 
 
@@ -31,6 +38,8 @@ private:
 
 	uint16_t screenBuffer[96*64];
 
+	uint16_t bufferIndex;
+	uint8_t commandBuffer[512];
 
 };
 

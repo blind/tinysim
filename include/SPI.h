@@ -3,6 +3,15 @@
 
 #include <cstdint>
 
+
+
+class ISPIDevice
+{
+public:
+	virtual uint8_t spiSlaveWrite( uint8_t ) = 0;
+};
+
+
 class DataRegister;
 
 class SimSPI
@@ -10,19 +19,25 @@ class SimSPI
 public:
 	SimSPI();
 
+	void AddDevice( ISPIDevice* device );
+
 	void begin();
 	void transfer( uint8_t something );
 
 	void setDataMode( uint8_t mode );
 	void setClockDivider( uint32_t divider );
-
-
 	void writeReg( DataRegister *reg, uint8_t data);
 
 	// Members
 	DataRegister* SPI_dataReg;
 
 	uint8_t SPI_IF;
+
+private:
+	ISPIDevice** devices;
+	uint32_t devicesArraySize;
+
+	ISPIDevice* currentSlave;
 
 };
 
