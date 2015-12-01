@@ -22,11 +22,12 @@ extern void loop();
 extern void setup();
 
 
-SimSSD1331 _simDisplay;
+static SimSSD1331 display;
 
 int main(void)
 {
-	SPI.AddDevice( &_simDisplay );
+	SPI.AddDevice( &display );
+	Wire.AddDevice( &display, 0x20 );
 
 	int result = TinySimRun( );
 

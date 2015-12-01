@@ -73,19 +73,33 @@ void SimSPI::writeReg( DataRegister *reg, uint8_t data)
 }
 
 
+
+
+/********************************
+ *
+ */
+
 SimWire::SimWire()
 {
 
 }
+
+
+void SimWire::AddDevice(II2CSlaveDevice* device, uint32_t address)
+{
+	this->device = device;
+	this->deviceAddress = address;
+}
+
 
 void SimWire::begin()
 {
 
 }
 
-void SimWire::beginTransmission(uint32_t data)
+void SimWire::beginTransmission(uint32_t address)
 {
-	printf("[SimWire::beginTransmission] $%02x\n", data);
+	printf("[SimWire::beginTransmission] $%02x\n", address);
 }
 
 void SimWire::endTransmission()
@@ -106,11 +120,16 @@ uint8_t SimWire::read()
 
 void SimWire::write(uint8_t data)
 {
-	printf("[SimWire::write] $%02x\n", data);
+//	printf("[SimWire::write] $%02x\n", data);
+	// TODO: Send to the device with address from last beginTransmission
+	this->device->writeData( data );
 }
 
 
 
+/********************************
+ *
+ */
 void SimSerial::begin(uint32_t)
 {
 

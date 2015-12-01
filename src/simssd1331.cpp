@@ -9,12 +9,25 @@ SimSSD1331::SimSSD1331()
 }
 
 
+void SimSSD1331::writeData( uint8_t data )
+{
+
+}
+
+
+uint8_t SimSSD1331::readData( uint8_t mode )
+{
+	return 0xffu;
+}
+
+
+
 uint8_t SimSSD1331::spiSlaveWrite( uint8_t data )
 {
+	printf("Incoming data: $%02x\n", data);
 
 	if( expectedByteCount == 0 )
 	{
-		printf("Incoming command: \033[34m%02x\033[0m\n", data);
 
 		switch( data )
 		{
