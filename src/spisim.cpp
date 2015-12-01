@@ -8,9 +8,6 @@
 #include "Wire.h"
 #include "Arduino.h"
 
-SimSerial Serial;
-SimSPI SPI;
-SimWire Wire;
 
 
 // This should be moved into SimWire class and accessed through macro.
@@ -75,56 +72,6 @@ void SimSPI::writeReg( DataRegister *reg, uint8_t data)
 
 
 
-/********************************
- *
- */
-
-SimWire::SimWire()
-{
-
-}
-
-
-void SimWire::AddDevice(II2CSlaveDevice* device, uint32_t address)
-{
-	this->device = device;
-	this->deviceAddress = address;
-}
-
-
-void SimWire::begin()
-{
-
-}
-
-void SimWire::beginTransmission(uint32_t address)
-{
-	printf("[SimWire::beginTransmission] $%02x\n", address);
-}
-
-void SimWire::endTransmission()
-{
-	printf("[SimWire::endTransmission]\n");
-}
-
-void SimWire::requestFrom(uint32_t address, uint8_t mode)
-{
-	printf("[SimWire::requestFrom] $%02x $%02x\n", address, mode);
-}
-
-uint8_t SimWire::read()
-{
-	return 0u;
-}
-
-
-void SimWire::write(uint8_t data)
-{
-//	printf("[SimWire::write] $%02x\n", data);
-	// TODO: Send to the device with address from last beginTransmission
-	this->device->writeData( data );
-}
-
 
 
 /********************************
@@ -138,7 +85,7 @@ void SimSerial::begin(uint32_t)
 
 void SimSerial::println(uint32_t intValue)
 {
-	printf( "[Serial::println] %d\n", intValue );
+//	printf( "[Serial::println] %d\n", intValue );
 }
 
 

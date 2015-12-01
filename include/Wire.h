@@ -7,15 +7,15 @@
 class II2CSlaveDevice
 {
 public:
-	virtual void writeData( uint8_t ) = 0;
-	virtual uint8_t readData( uint8_t data ) = 0;
+	virtual void i2cWriteData( uint8_t ) = 0;
+	virtual uint8_t i2cReadData( ) = 0;
 };
 
 
 class SimWire
 {
 public:
-	SimWire();
+	SimWire(bool verbose = false);
 
 	void AddDevice(II2CSlaveDevice*, uint32_t address);
 
@@ -27,9 +27,12 @@ public:
 	void write(uint8_t);
 
 
+private:
 	// For now we have only one device, so that is what I'm testing.
 	II2CSlaveDevice* device;
 	uint32_t deviceAddress;
+
+	bool verbose_;
 
 };
 

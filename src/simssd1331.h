@@ -12,16 +12,34 @@ public:
 	SimSSD1331();
 
 
+	uint16_t* GetScreenBuffer() { return screenBuffer; };
+
+
+
 	// Write data to SPI slave, return data written by slave.
 	virtual uint8_t spiSlaveWrite( uint8_t );
 
 
 	// I2C Slave 
-	virtual void writeData( uint8_t );
-	virtual uint8_t readData( uint8_t ) ;
+	virtual void i2cWriteData( uint8_t );
+	virtual uint8_t i2cReadData( ) ;
 
 
 private:
+
+	// I2C GPIO expander stuff.
+
+	void WriteDataByte( uint8_t );
+	void WriteCommandByte( uint8_t );
+
+	int8_t busState;
+	int8_t regIdx;
+	int8_t regs[32];
+
+	// SSD1331 controller
+
+	void ExecuteCommandInBuffer();
+
 	// Control register
 
 	uint8_t expectedByteCount;
@@ -34,6 +52,8 @@ private:
 
 
 	// Internal registers...
+
+	uint8_t colorModeRemapReg;
 
 	uint8_t columnStart;
 	uint8_t columnEnd;

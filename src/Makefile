@@ -6,7 +6,7 @@ LIBS=-framework SDL2 -lc++ -lc
 LDFLAGS=-framework SDL2 -macosx_version_min 10.9
 
 
-CFILES=tinysim.cpp spisim.cpp simssd1331.cpp
+CFILES=tinysim.cpp spisim.cpp simssd1331.cpp simwire.cpp
 
 OBJS=$(CFILES:.cpp=.o)
 

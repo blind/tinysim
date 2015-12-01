@@ -22,6 +22,7 @@ public:
 	void AddDevice( ISPIDevice* device );
 
 	void begin();
+
 	void transfer( uint8_t something );
 
 	void setDataMode( uint8_t mode );

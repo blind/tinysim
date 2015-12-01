@@ -6,6 +6,8 @@
 
 #include "tinysim.h"
 #include "simssd1331.h"
+#include "Wire.h"
+#include "Arduino.h"
 
 static SDL_Window *window;
 static SDL_Surface *surface;
@@ -21,6 +23,10 @@ static int scale = 3;
 extern void loop();
 extern void setup();
 
+
+SimSerial Serial;
+SimSPI SPI;
+SimWire Wire;
 
 static SimSSD1331 display;
 
@@ -56,6 +62,10 @@ int TinySimRun( )
 	{
 		uint32_t start = SDL_GetTicks();
 		loop();
+
+		uint16_t* dispBuff = display.GetScreenBuffer();
+
+		TinySimBlit16( dispBuff );
 
 		SDL_Surface *dstSurface = SDL_GetWindowSurface(window);
 		SDL_BlitScaled( surface, NULL, dstSurface, NULL );

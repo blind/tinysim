@@ -3,32 +3,103 @@
 #include <cstdio>
 
 
+
 SimSSD1331::SimSSD1331()
 {
 	bufferIndex = 0;
+	regs[0] = 0xffu;
+	regs[1] = 0xffu;
+	regs[5] = 0xffu;
+	bufferIndex = 0;
+	columnStart = 0;
+	columnEnd = 95;
+
+	rowStart = 0;
+	rowEnd = 63;
+
+	columnPtr = 0;
+	columnEnd = 0;
+
+}
+
+void SimSSD1331::i2cWriteData( uint8_t data )
+{
+	if( busState == 0 )
+	{
+		regIdx = data & 31;
+	}
+	else
+	{
+		regs[regIdx] = data;
+	}
+	busState ^= 1;
 }
 
 
-void SimSSD1331::writeData( uint8_t data )
+uint8_t SimSSD1331::i2cReadData( )
 {
-
-}
-
-
-uint8_t SimSSD1331::readData( uint8_t mode )
-{
-	return 0xffu;
+	busState ^= 1;
+	return regs[regIdx]; // Upper bits are buttons, 
 }
 
 
 
 uint8_t SimSSD1331::spiSlaveWrite( uint8_t data )
 {
-	printf("Incoming data: $%02x\n", data);
+//	printf("Incoming data: $%02x\n", data);
+
+
+	if( regs[0] & 1 )
+	{
+		// Write data
+		WriteDataByte( data );
+
+	}
+	else
+	{
+		// Write command
+		WriteCommandByte( data );
+	}
+
+	// Since MISO is not connected, return ones.
+	return 0xffu;
+}
+
+void SimSSD1331::WriteDataByte( uint8_t data )
+{
+	uint8_t colorMode = (colorModeRemapReg >> 6) & 3u;
+
+	if( colorMode == 0 )
+	{
+		// 256 color mode
+		// red
+		uint16_t color = (data&0xe0)<<8u;
+		color |= (data&0x1c) << 6u;
+		color |= (data&0x3) << 3u;
+
+		uint16_t index = rowPtr * 96 + columnPtr;
+		screenBuffer[index] = color;
+	}
+
+
+
+
+	// This is the default, adding in other order depending
+	// on state will come later, when needed.
+	if( ++columnPtr > columnEnd )
+	{
+		columnPtr = columnStart;
+		if( ++rowPtr > rowEnd ) rowPtr = rowStart;
+	}
+}
+
+
+void SimSSD1331::WriteCommandByte( uint8_t data )
+{
+	commandBuffer[bufferIndex++] = data;
 
 	if( expectedByteCount == 0 )
 	{
-
 		switch( data )
 		{
 		case 0x15: // Set column start and end address
@@ -198,11 +269,63 @@ uint8_t SimSSD1331::spiSlaveWrite( uint8_t data )
 			break;
 		}	
 	}
+
+
+	// TODO: Save bytes to buffer. execute command when expected byte count is 0.
+	if( expectedByteCount == 0 )
+	{
+		ExecuteCommandInBuffer( );
+		bufferIndex = 0;
+	}
 	else
 	{
-		// TODO: Save bytes to buffer. execute command when expected byte count is 0.
-		expectedByteCount--;
+		--expectedByteCount;
 	}
+}
 
-	return 0;
+
+void SimSSD1331::ExecuteCommandInBuffer()
+{
+	auto buffPtr = commandBuffer;
+	auto command = *buffPtr++; 
+
+	switch( command )
+	{
+	case 0x15:
+		{
+			// Set column address 
+			columnStart = *buffPtr++;
+			columnEnd = *buffPtr++;
+			// printf("set column start-end %d - %d\n", columnStart, columnEnd);
+		}
+		break;
+
+	case 0x75:
+		{
+			// Set row address 
+			rowStart = *buffPtr++;
+			rowEnd = *buffPtr++;
+			// printf("set row start-end %d - %d\n", rowStart, rowEnd);
+		}
+		break;
+
+	case 0xa0:
+		{
+			// Remap and color depth settings.
+			colorModeRemapReg = *buffPtr++;
+		}
+		break;
+
+
+	default:
+		printf("SSD1331 command not implemented: $%02x", command);
+		{
+			int i = 1; 
+			while( i < bufferIndex )
+				printf(", $%02x", commandBuffer[i++] );
+			printf("\n" );
+			
+		}
+		break;
+	}
 }
