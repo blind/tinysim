@@ -1,12 +1,15 @@
 
 
-#include <stdint.h>
-#include <stdio.h>
+#include <chrono>
+#include <cstdint>
+#include <cstdio>
 
 
 #include "SPI.h"
 #include "Wire.h"
 #include "Arduino.h"
+
+
 
 
 
@@ -94,9 +97,20 @@ uint8_t pgm_read_byte( const uint8_t* address ) { return *address; }
 uint16_t pgm_read_word( const uint16_t* address ) { return *address; }
 
 
-void delay( uint32_t /* len */ ) { }
+void delay( uint32_t /* len */ )
+{
+	// This needs to execute SDL loop for len ms.
+}
 
-uint16_t micros() { return 1u; }
-uint16_t millis() { return 1u; }
+uint16_t micros()
+{
+	auto now = std::chrono::high_resolution_clock::now().time_since_epoch();
+	return (uint16_t)std::chrono::duration_cast<std::chrono::microseconds>(now).count();
+}
+uint16_t millis()
+{
+	auto now = std::chrono::high_resolution_clock::now().time_since_epoch();
+	return (uint16_t)std::chrono::duration_cast<std::chrono::milliseconds>(now).count();
+}
 
 

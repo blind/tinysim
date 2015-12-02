@@ -180,7 +180,6 @@ void SimSSD1331::WriteCommandByte( uint8_t data )
 		case 0xA6:
 		case 0xA7:
 			expectedByteCount = 0;
-			// TODO: Handle command
 			break;
 
 		// Set mux ratio to N+1
@@ -202,7 +201,6 @@ void SimSSD1331::WriteCommandByte( uint8_t data )
 		case 0xAE: // Display OFF (sleep mode)
 		case 0xAF: // Display ON in normal mode.
 			expectedByteCount = 0;
-			// TODO: Handle command
 			break;
 
 		case 0xB0: // Enable power save mode.
