@@ -63,7 +63,7 @@ void SimSPI::setClockDivider( uint32_t divider )
 
 void SimSPI::writeReg( DataRegister *reg, uint8_t data)
 {
-	if( reg == SPI_dataReg )
+	if( (reg == SPI_dataReg) && (currentSlave != NULL) )
 	{
 		currentSlave->spiSlaveWrite( data );
 	}

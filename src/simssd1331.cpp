@@ -72,13 +72,29 @@ void SimSSD1331::WriteDataByte( uint8_t data )
 	if( colorMode == 0 )
 	{
 		// 256 color mode
-		// red
-		uint16_t color = (data&0xe0)<<8u;
-		color |= (data&0x1c) << 6u;
-		color |= (data&0x3) << 3u;
+		if( 0 == (colorModeRemapReg & (1u<<2)) )
+		{
+			// Normal RGB 
+			uint16_t color = (data&0xe0)<<8u;
+			color |= (data&0x1c) << 6u;
+			color |= (data&0x3) << 3u;
 
-		uint16_t index = rowPtr * 96 + columnPtr;
-		screenBuffer[index] = color;
+			uint16_t index = rowPtr * 96 + columnPtr;
+			screenBuffer[index] = color;
+		}
+		else
+		{
+			// Revered, BGR
+			uint16_t color = (data&0x03)<<14u; // R
+			color |= (data&0x1c) << 6u;		// G
+			color |= (data&0xe0) >> 2u;		// B
+
+			uint16_t index = rowPtr * 96 + columnPtr;
+			screenBuffer[index] = color;
+
+		}
+
+		// red
 	}
 
 
@@ -296,6 +312,7 @@ void SimSSD1331::ExecuteCommandInBuffer()
 			// Set column address 
 			columnStart = *buffPtr++;
 			columnEnd = *buffPtr++;
+			columnPtr = columnStart;
 			// printf("set column start-end %d - %d\n", columnStart, columnEnd);
 		}
 		break;
@@ -305,6 +322,7 @@ void SimSSD1331::ExecuteCommandInBuffer()
 			// Set row address 
 			rowStart = *buffPtr++;
 			rowEnd = *buffPtr++;
+			rowPtr = rowStart;
 			// printf("set row start-end %d - %d\n", rowStart, rowEnd);
 		}
 		break;
