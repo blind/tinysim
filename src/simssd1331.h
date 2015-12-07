@@ -26,7 +26,6 @@ public:
 
 
 private:
-
 	// I2C GPIO expander stuff.
 
 	void WriteDataByte( uint8_t );
@@ -45,6 +44,9 @@ private:
 	uint8_t expectedByteCount;
 
 	uint8_t currentCommand; // 
+
+	uint8_t colorWriteCounter;
+	uint16_t finalColor;
 
 
 	uint8_t columnPtr;
@@ -65,7 +67,7 @@ private:
 
 	uint16_t bufferIndex;
 	uint8_t commandBuffer[512];
-
+	uint8_t tmpColorBuffer[3];
 };
 
 #endif

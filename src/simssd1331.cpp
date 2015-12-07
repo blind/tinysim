@@ -42,70 +42,115 @@ uint8_t SimSSD1331::i2cReadData( )
 	return regs[regIdx]; // Upper bits are buttons, 
 }
 
-
-
 uint8_t SimSSD1331::spiSlaveWrite( uint8_t data )
 {
-//	printf("Incoming data: $%02x\n", data);
-
-
-	if( regs[0] & 1 )
-	{
-		// Write data
+	if( regs[0] & 1 ) {
 		WriteDataByte( data );
-
-	}
-	else
-	{
-		// Write command
+	} else {
 		WriteCommandByte( data );
 	}
-
 	// Since MISO is not connected, return ones.
 	return 0xffu;
 }
 
-void SimSSD1331::WriteDataByte( uint8_t data )
+static uint16_t GetColorByCombiningBuffer( const uint8_t* buffer, uint8_t mode, bool reversed )
 {
-	uint8_t colorMode = (colorModeRemapReg >> 6) & 3u;
-
-	if( colorMode == 0 )
-	{
-		// 256 color mode
-		if( 0 == (colorModeRemapReg & (1u<<2)) )
+	uint16_t color = 0u;
+	switch( mode ) {
+	case 1:
 		{
-			// Normal RGB 
-			uint16_t color = (data&0xe0)<<8u;
-			color |= (data&0x1c) << 6u;
-			color |= (data&0x3) << 3u;
+			uint16_t b0 = *buffer;
+			uint16_t b1 = *(buffer+1);
 
-			uint16_t index = rowPtr * 96 + columnPtr;
-			screenBuffer[index] = color;
+			if( !reversed ) {
+				// Normal rgb
+				color = b0<<8 | b1;
+			} else {
+				// Reversed RGB
+				color = ((b1&0x1f)<<11u) | ((b0>>3u)&0x1f) | (b1&0xe0) | (b0&0x07)<<8u;
+			}
 		}
-		else
+		break;
+
+	case 2: 
 		{
-			// Revered, BGR
-			uint16_t color = (data&0x03)<<14u; // R
-			color |= (data&0x1c) << 6u;		// G
-			color |= (data&0xe0) >> 2u;		// B
+			uint8_t b0 = *buffer;
+			uint8_t b1 = *(buffer+1);
+			uint8_t b2 = *(buffer+2);
 
-			uint16_t index = rowPtr * 96 + columnPtr;
-			screenBuffer[index] = color;
-
+			if( !reversed )
+			{
+				color = ((b0&0x3f) << 10) | ((b1&0x3f)<<5) | ((b2&0x3e)>>1);
+			}
+			else
+			{
+				color = ((b2&0x3f) << 10) | ((b1&0x3f)<<5) | ((b0&0x3e)>>1);
+			}
 		}
+		break;
 
-		// red
+	default:
+		// Log invalid state.
+		break;
 	}
 
 
+	return color;
+}
 
 
-	// This is the default, adding in other order depending
-	// on state will come later, when needed.
-	if( ++columnPtr > columnEnd )
-	{
-		columnPtr = columnStart;
-		if( ++rowPtr > rowEnd ) rowPtr = rowStart;
+void SimSSD1331::WriteDataByte( uint8_t data )
+{
+	uint8_t colorMode = (colorModeRemapReg >> 6) & 3u;
+	bool reverseColors = 0 != (colorModeRemapReg & (1u<<2));
+	bool writeColor = false;
+	uint16_t finalColor; 
+
+	if( colorMode == 0 ) {
+		// 256 color mode
+		if( !reverseColors ) {
+			// Normal RGB 
+			finalColor = (data&0xe0)<<8u;
+			finalColor |= (data&0x1c) << 6u;
+			finalColor |= (data&0x3) << 3u;
+		} else {
+			// Revered, BGR
+			finalColor = (data&0x03)<<14u; // R
+			finalColor |= (data&0x1c) << 6u;		// G
+			finalColor |= (data&0xe0) >> 2u;		// B
+		}
+		writeColor = true;
+	} else if( colorMode == 1 ) {
+		// Two bytes per pixel
+		if( colorWriteCounter < 1) {
+			tmpColorBuffer[colorWriteCounter++] = data;
+		} else {
+			tmpColorBuffer[colorWriteCounter] = data;
+			finalColor = GetColorByCombiningBuffer(tmpColorBuffer, colorMode, reverseColors);
+			writeColor = true;
+		}
+	} else {
+		// colorMode == 2
+		// Three bytes per pixel
+		if( colorWriteCounter < 2 ) {
+			tmpColorBuffer[colorWriteCounter++] = data;
+		} else {
+			tmpColorBuffer[colorWriteCounter++] = data;
+			finalColor = GetColorByCombiningBuffer(tmpColorBuffer, colorMode, reverseColors);
+			writeColor = true;
+		}
+	}
+
+	if( writeColor ) {
+		uint16_t index = rowPtr * 96 + columnPtr;
+		screenBuffer[index] = finalColor;
+		colorWriteCounter = 0;
+		// This is the default, adding in other order depending
+		// on state will come later, when needed.
+		if( ++columnPtr > columnEnd ) {
+			columnPtr = columnStart;
+			if( ++rowPtr > rowEnd ) rowPtr = rowStart;
+		}
 	}
 }
 
@@ -311,7 +356,8 @@ void SimSSD1331::ExecuteCommandInBuffer()
 			columnStart = *buffPtr++;
 			columnEnd = *buffPtr++;
 			columnPtr = columnStart;
-			// printf("set column start-end %d - %d\n", columnStart, columnEnd);
+			printf("set column start-end %d - %d\n", columnStart, columnEnd);
+			colorWriteCounter = 0u;
 		}
 		break;
 
@@ -321,7 +367,8 @@ void SimSSD1331::ExecuteCommandInBuffer()
 			rowStart = *buffPtr++;
 			rowEnd = *buffPtr++;
 			rowPtr = rowStart;
-			// printf("set row start-end %d - %d\n", rowStart, rowEnd);
+			printf("set row start-end %d - %d\n", rowStart, rowEnd);
+			colorWriteCounter = 0u;
 		}
 		break;
 
@@ -329,6 +376,7 @@ void SimSSD1331::ExecuteCommandInBuffer()
 		{
 			// Remap and color depth settings.
 			colorModeRemapReg = *buffPtr++;
+			colorWriteCounter = 0u;
 		}
 		break;
 
