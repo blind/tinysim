@@ -32,6 +32,7 @@ static SimSSD1331 display;
 
 int main(void)
 {
+	printf("Starting TinySim\n");
 	SPI.AddDevice( &display );
 	Wire.AddDevice( &display, 0x20 );
 
@@ -64,7 +65,6 @@ int TinySimRun( )
 		loop();
 
 		uint16_t* dispBuff = display.GetScreenBuffer();
-
 		TinySimBlit16( dispBuff );
 
 		SDL_Surface *dstSurface = SDL_GetWindowSurface(window);
