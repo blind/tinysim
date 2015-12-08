@@ -130,7 +130,7 @@ void setup()
 {
 	for( int i = 0; i < STAR_COUNT; ++i )
 	{
-		stars[i].x = rand() & 0xffff;
+		stars[i].x = rand() & 0x7fff;
 		stars[i].y = rand() & 0x3f;
 		stars[i].speed = rand() & 0x3ff;
 	}
