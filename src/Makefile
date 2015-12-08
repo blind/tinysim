@@ -10,7 +10,9 @@ CFILES=tinysim.cpp spisim.cpp simssd1331.cpp simwire.cpp
 
 OBJS=$(CFILES:.cpp=.o)
 
-all: test.o tinysim.lib 
+all: tinysim.lib tinytest
+
+tinytest: test.o tinysim.lib
 	$(LD) $(LDFLAGS) -o tinytest $(LIBS) $^
 
 tinysim.lib: $(OBJS)
@@ -22,3 +24,4 @@ tinysim.lib: $(OBJS)
 clean:
 	rm -f tinysim.lib tinytest $(OBJS) *.o
 
+.PHONY: all
