@@ -27,7 +27,7 @@
 #define SSD1331_
 
 
-#define STAR_COUNT 100
+#define STAR_COUNT 300
 
 struct Star
 {
@@ -53,6 +53,7 @@ static void DrawStars()
 	for( int i = 0; i < STAR_COUNT; ++i, star++ )
 	{
 		star->x -= star->speed;
+		star->x &= 0x7fff;
 		int16_t x = star->x >> 8;
 		if( (x >= 0) && (x < 96) )
 			myFrameBuffer[ x + star->y * 96] = 0xffff;
