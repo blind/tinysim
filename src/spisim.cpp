@@ -14,7 +14,7 @@
 
 
 // This should be moved into SimWire class and accessed through macro.
-uint8_t TWBR;
+uint8_t TWBR = 0u;
 
 
 SimSPI::SimSPI()
