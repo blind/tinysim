@@ -142,15 +142,34 @@ void SimSSD1331::WriteDataByte( uint8_t data )
 	}
 
 	if( writeColor ) {
-		uint16_t index = rowPtr * 96 + columnPtr;
+
+		uint16_t index;
+		// Column addressing bit, if set, reverse lines.
+		if( colorModeRemapReg & (1u<<1) )
+			index = rowPtr * 96 + (95-columnPtr);
+		else
+			index = rowPtr * 96 + columnPtr;
 		screenBuffer[index] = finalColor;
 		colorWriteCounter = 0;
-		// This is the default, adding in other order depending
-		// on state will come later, when needed.
-		if( ++columnPtr > columnEnd ) {
-			columnPtr = columnStart;
-			if( ++rowPtr > rowEnd ) rowPtr = rowStart;
+
+
+		// Address increment mode, if set increment row first.
+		if( colorModeRemapReg & (1u) )
+		{
+			if( ++rowPtr > rowEnd ){
+				rowPtr = rowStart;
+				if( ++columnPtr > columnEnd ) columnPtr = columnStart;
+			}
+
 		}
+		else
+		{
+			if( ++columnPtr > columnEnd ) {
+				columnPtr = columnStart;
+				if( ++rowPtr > rowEnd ) rowPtr = rowStart;
+			}
+		}
+
 	}
 }
 
