@@ -5,7 +5,7 @@
 #include <stdint.h>
 
 #include "tinysim.h"
-#include "simssd1331.h"
+#include "simtinyscreen.h"
 #include "Wire.h"
 #include "Arduino.h"
 
@@ -28,7 +28,7 @@ SimSerial Serial;
 SimSPI SPI;
 SimWire Wire;
 
-static SimSSD1331 display;
+static SimTinyScreen display;
 
 int main(void)
 {

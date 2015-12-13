@@ -23,10 +23,6 @@
 #define PIN_BTN3	0x40
 #define PIN_BTN4	0x80
 
-
-#define SSD1331_
-
-
 #define STAR_COUNT 300
 
 struct Star

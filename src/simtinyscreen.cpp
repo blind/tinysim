@@ -1,10 +1,10 @@
-#include  "simssd1331.h"
+#include  "simtinyscreen.h"
 
 #include <cstdio>
 
 
 
-SimSSD1331::SimSSD1331()
+SimTinyScreen::SimTinyScreen()
 {
 	bufferIndex = 0;
 	regs[0] = 0xffu;
@@ -22,7 +22,7 @@ SimSSD1331::SimSSD1331()
 
 }
 
-void SimSSD1331::i2cWriteData( uint8_t data )
+void SimTinyScreen::i2cWriteData( uint8_t data )
 {
 	if( busState == 0 ) {
 		regIdx = data & 31;
@@ -33,13 +33,13 @@ void SimSSD1331::i2cWriteData( uint8_t data )
 }
 
 
-uint8_t SimSSD1331::i2cReadData( )
+uint8_t SimTinyScreen::i2cReadData( )
 {
 	busState ^= 1;
 	return regs[regIdx]; // Upper bits are buttons, 
 }
 
-uint8_t SimSSD1331::spiSlaveWrite( uint8_t data )
+uint8_t SimTinyScreen::spiSlaveWrite( uint8_t data )
 {
 	if( regs[0] & 1 ) {
 		WriteDataByte( data );
@@ -93,7 +93,7 @@ static uint16_t GetColorByCombiningBuffer( const uint8_t* buffer, uint8_t mode, 
 }
 
 
-void SimSSD1331::WriteDataByte( uint8_t data )
+void SimTinyScreen::WriteDataByte( uint8_t data )
 {
 	uint8_t colorMode = (colorModeRemapReg >> 6) & 3u;
 	bool reverseColors = 0 != (colorModeRemapReg & (1u<<2));
@@ -167,7 +167,7 @@ void SimSSD1331::WriteDataByte( uint8_t data )
 }
 
 
-void SimSSD1331::WriteCommandByte( uint8_t data )
+void SimTinyScreen::WriteCommandByte( uint8_t data )
 {
 	commandBuffer[bufferIndex++] = data;
 
@@ -330,7 +330,7 @@ void SimSSD1331::WriteCommandByte( uint8_t data )
 }
 
 
-void SimSSD1331::ExecuteCommandInBuffer()
+void SimTinyScreen::ExecuteCommandInBuffer()
 {
 	auto buffPtr = commandBuffer;
 	auto command = *buffPtr++; 

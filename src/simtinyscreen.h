@@ -1,15 +1,15 @@
-#ifndef __SIMSSD1331_H__
-#define __SIMSSD1331_H__
+#ifndef __SIMTINYSCREEN_H__
+#define __SIMTINYSCREEN_H__
 
 #include <stdint.h>
 
 #include "SPI.h"
 #include "Wire.h"
 
-class SimSSD1331 : public ISPIDevice, public II2CSlaveDevice
+class SimTinyScreen : public ISPIDevice, public II2CSlaveDevice
 {
 public:
-	SimSSD1331();
+	SimTinyScreen();
 
 
 	uint16_t* GetScreenBuffer() { return screenBuffer; };
