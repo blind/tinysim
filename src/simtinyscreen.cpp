@@ -3,7 +3,6 @@
 #include <cstdio>
 
 
-
 SimTinyScreen::SimTinyScreen()
 {
 	bufferIndex = 0;
@@ -19,7 +18,6 @@ SimTinyScreen::SimTinyScreen()
 
 	columnPtr = 0;
 	columnEnd = 0;
-
 }
 
 void SimTinyScreen::i2cWriteData( uint8_t data )
@@ -104,7 +102,6 @@ static uint16_t GetColorByCombiningBuffer( const uint8_t* buffer, uint8_t mode, 
 		break;
 	}
 
-
 	return color;
 }
 
@@ -146,18 +143,19 @@ void SimTinyScreen::WriteDataByte( uint8_t data )
 		if( colorModeRemapReg & (1u) ) {
 			if( ++rowPtr > rowEnd ) {
 				rowPtr = rowStart;
-				if( ++columnPtr > columnEnd )
+				if( ++columnPtr > columnEnd ) {
 					columnPtr = columnStart;
+				}
 			}
 
 		} else {
 			if( ++columnPtr > columnEnd ) {
 				columnPtr = columnStart;
-				if( ++rowPtr > rowEnd )
+				if( ++rowPtr > rowEnd ) {
 					rowPtr = rowStart;
+				}
 			}
 		}
-
 	}
 }
 
@@ -166,17 +164,17 @@ void SimTinyScreen::WriteCommandByte( uint8_t data )
 {
 	commandBuffer[bufferIndex++] = data;
 
-	if( expectedByteCount == 0 )
+	if( expectedByteCount_ == 0 )
 	{
 		switch( data )
 		{
 		case 0x15: // Set column start and end address
-			expectedByteCount = 2; // two more bytes.
+			expectedByteCount_ = 2; // two more bytes.
 			break;
 
 
 		case 0x75: // Set row start and end address
-			expectedByteCount = 2; // two more bytes.
+			expectedByteCount_ = 2; // two more bytes.
 			break;
 
 
@@ -184,7 +182,7 @@ void SimTinyScreen::WriteCommandByte( uint8_t data )
 		case 0x82: // Set contrast for "B" segment (green?)
 		case 0x83: // Set contrast for "C" segment (red?)
 		case 0x87: // Set master current attenuation factor
-			expectedByteCount = 1;
+			expectedByteCount_ = 1;
 			break;
 
 
@@ -192,14 +190,14 @@ void SimTinyScreen::WriteCommandByte( uint8_t data )
 		case 0x8A: // segment A
 		case 0x8B: // segment B
 		case 0x8C: // segment C
-			expectedByteCount = 1;
+			expectedByteCount_ = 1;
 			break;
 
 
 		case 0xA0:	// Set driver remap and color depth
 		case 0xA1:	// Set display start list register by row
 		case 0xA2:	// Set vertical offset by Column
-			expectedByteCount = 1;
+			expectedByteCount_ = 1;
 			break;
 
 
@@ -208,101 +206,101 @@ void SimTinyScreen::WriteCommandByte( uint8_t data )
 		case 0xA5:	// Entire display ON, all pixels turn on at GS63
 		case 0xA6:	// Entire display OFF, all pixels turn OFF
 		case 0xA7:	// Inverse display
-			expectedByteCount = 0;
+			expectedByteCount_ = 0;
 			break;
 
 		// Set mux ratio to N+1
 		case 0xA8:
-			expectedByteCount = 1;
+			expectedByteCount_ = 1;
 			break;
 
 
 		// Configure dim mode setting
 		case 0xAB:
-			expectedByteCount = 5;
+			expectedByteCount_ = 5;
 			break;
 
 		case 0xAD: // Selecte extern Vcc supply
-			expectedByteCount = 1;
+			expectedByteCount_ = 1;
 			break;
 
 		case 0xAC: // Display on in dim mode
 		case 0xAE: // Display OFF (sleep mode)
 		case 0xAF: // Display ON in normal mode.
-			expectedByteCount = 0;
+			expectedByteCount_ = 0;
 			break;
 
 		case 0xB0: // Enable power save mode.
-			expectedByteCount = 1;
+			expectedByteCount_ = 1;
 			break;
 
 		case 0xB1: // Phase 1 period in N DCLK.
-			expectedByteCount = 1;
+			expectedByteCount_ = 1;
 			break;
 
 		case 0xB3: // Define the divide ratio of display clocks
-			expectedByteCount = 1;
+			expectedByteCount_ = 1;
 			break;
 
 
 		case 0xB8: // Pluse width of DCLK
-			expectedByteCount = 32;
+			expectedByteCount_ = 32;
 			break;
 
 		case 0xB9: // Reset built in gray scale table
-			expectedByteCount = 0;
+			expectedByteCount_ = 0;
 			// TODO: handle command
 			break;
 
 		case 0xBB: // Set pre-charge voltage level
-			expectedByteCount = 1;
+			expectedByteCount_ = 1;
 			break;
 
 		case 0xBE: // Set Com deselect voltage level
-			expectedByteCount = 1;
+			expectedByteCount_ = 1;
 			break;
 
 		case 0xFD: // MCU protection status
-			expectedByteCount = 1;
+			expectedByteCount_ = 1;
 			break;
 
 
 		// Accellerated graphics commands
 		case 0x21: // Draw Line
-			expectedByteCount = 7;
+			expectedByteCount_ = 7;
 			break;
 
 		case 0x22: // Drawing rectangle
-			expectedByteCount = 10;
+			expectedByteCount_ = 10;
 			break;
 
 		case 0x23: // Copy
-			expectedByteCount = 6;
+			expectedByteCount_ = 6;
 			break;
 
 		case 0x24: // Dim window
-			expectedByteCount = 4;
+			expectedByteCount_ = 4;
 			break;
 
 		case 0x25: // Clear window
-			expectedByteCount = 4;
+			expectedByteCount_ = 4;
 			break;
 
 		case 0x26: // Fill enable/disable
-			expectedByteCount = 1;
+			expectedByteCount_ = 1;
 			break;
 
 		case 0x27: // Set number of column as horizontal scroll offset.
-			expectedByteCount = 5;
+			expectedByteCount_ = 5;
 			break;
 
 		case 0x2E: // Deactivate scrolling
-			expectedByteCount = 0;
+			expectedByteCount_ = 0;
 			// TODO: Handle command
 			break;
 
 		case 0x2F: // Activate scrolling
-			expectedByteCount = 0;
+			expectedByteCount_ = 0;
 			// TODO: Handle command
 			break;
 
@@ -315,12 +313,12 @@ void SimTinyScreen::WriteCommandByte( uint8_t data )
 
 
 	// TODO: Save bytes to buffer. execute command when expected byte count is 0.
-	if( expectedByteCount == 0 )
+	if( expectedByteCount_ == 0 )
 	{
 		ExecuteCommandInBuffer( );
 		bufferIndex = 0;
 	} else {
-		--expectedByteCount;
+		--expectedByteCount_;
 	}
 }
 
@@ -357,7 +355,7 @@ void SimTinyScreen::ExecuteCommandInBuffer()
 	case 0xa0:
 		{
 			// Remap and color depth settings.
-			colorModeRemapReg = *buffPtr++;
+			colorModeRemapReg = *buffPtr;
 			colorWriteCounter = 0u;
 		}
 		break;

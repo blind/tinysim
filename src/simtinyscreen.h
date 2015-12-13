@@ -41,7 +41,7 @@ private:
 
 	// Control register
 
-	uint8_t expectedByteCount;
+	uint8_t expectedByteCount_;
 
 	uint8_t currentCommand; // 
 
