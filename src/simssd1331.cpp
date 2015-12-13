@@ -24,12 +24,9 @@ SimSSD1331::SimSSD1331()
 
 void SimSSD1331::i2cWriteData( uint8_t data )
 {
-	if( busState == 0 )
-	{
+	if( busState == 0 ) {
 		regIdx = data & 31;
-	}
-	else
-	{
+	} else {
 		regs[regIdx] = data;
 	}
 	busState ^= 1;
@@ -59,8 +56,8 @@ static uint16_t GetColorByCombiningBuffer( const uint8_t* buffer, uint8_t mode, 
 	switch( mode ) {
 	case 1:
 		{
-			uint16_t b0 = *buffer;
-			uint16_t b1 = *(buffer+1);
+			uint8_t b0 = *buffer;
+			uint8_t b1 = *(buffer+1);
 
 			if( !reversed ) {
 				// Normal rgb
@@ -78,12 +75,9 @@ static uint16_t GetColorByCombiningBuffer( const uint8_t* buffer, uint8_t mode, 
 			uint8_t b1 = *(buffer+1);
 			uint8_t b2 = *(buffer+2);
 
-			if( !reversed )
-			{
+			if( !reversed ) {
 				color = ((b0&0x3f) << 10) | ((b1&0x3f)<<5) | ((b2&0x3e)>>1);
-			}
-			else
-			{
+			} else {
 				color = ((b2&0x3f) << 10) | ((b1&0x3f)<<5) | ((b0&0x3e)>>1);
 			}
 		}
@@ -154,19 +148,18 @@ void SimSSD1331::WriteDataByte( uint8_t data )
 
 
 		// Address increment mode, if set increment row first.
-		if( colorModeRemapReg & (1u) )
-		{
-			if( ++rowPtr > rowEnd ){
+		if( colorModeRemapReg & (1u) ) {
+			if( ++rowPtr > rowEnd ) {
 				rowPtr = rowStart;
-				if( ++columnPtr > columnEnd ) columnPtr = columnStart;
+				if( ++columnPtr > columnEnd )
+					columnPtr = columnStart;
 			}
 
-		}
-		else
-		{
+		} else {
 			if( ++columnPtr > columnEnd ) {
 				columnPtr = columnStart;
-				if( ++rowPtr > rowEnd ) rowPtr = rowStart;
+				if( ++rowPtr > rowEnd )
+					rowPtr = rowStart;
 			}
 		}
 
@@ -193,17 +186,8 @@ void SimSSD1331::WriteCommandByte( uint8_t data )
 
 
 		case 0x81: // Set contrast for "A" segment (blue?)
-			expectedByteCount = 1;
-			break;
-
 		case 0x82: // Set contrast for "B" segment (green?)
-			expectedByteCount = 1;
-			break;
-
 		case 0x83: // Set contrast for "C" segment (red?)
-			expectedByteCount = 1;
-			break;
-
 		case 0x87: // Set master current attenuation factor
 			expectedByteCount = 1;
 			break;
@@ -211,38 +195,24 @@ void SimSSD1331::WriteCommandByte( uint8_t data )
 
 		// Set second pre charge speed
 		case 0x8A: // segment A
-			expectedByteCount = 1;
-			break;
-
 		case 0x8B: // segment B
-			expectedByteCount = 1;
-			break;
-
 		case 0x8C: // segment C
 			expectedByteCount = 1;
 			break;
 
 
-		// Set driver remap and color depth
-		case 0xA0:
-			expectedByteCount = 1;
-			break;
-
+		case 0xA0:	// Set driver remap and color depth
 		case 0xA1:	// Set display start list register by row
-			expectedByteCount = 1;
-			break;
-
-
 		case 0xA2:	// Set vertical offset by Column
 			expectedByteCount = 1;
 			break;
 
 
 		// Display modes
-		case 0xA4:
-		case 0xA5:
-		case 0xA6:
-		case 0xA7:
+		case 0xA4:	// Normal display
+		case 0xA5:	// Entire display ON, all pixels turn on at GS63
+		case 0xA6:	// Entire display OFF, all pixels turn OFF
+		case 0xA7:	// Inverse display
 			expectedByteCount = 0;
 			break;
 
@@ -354,9 +324,7 @@ void SimSSD1331::WriteCommandByte( uint8_t data )
 	{
 		ExecuteCommandInBuffer( );
 		bufferIndex = 0;
-	}
-	else
-	{
+	} else {
 		--expectedByteCount;
 	}
 }

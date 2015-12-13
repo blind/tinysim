@@ -14,13 +14,13 @@ To allow users on different platforms I chose to implemented it using SDL2.
 
 ### Current status
 
-The coding have just started, so only the display part is implemented. 
+ * Simple SPI and I2C simulation. Only one I2C slave supported at the moment.
+ * TinyDisplay basic simulation.
 
 
 ### Planned features
-
- * Simulate SPI and Wire interfaces.
- * Simulate Serial interface for pringing logs.
+ * TinyDisplay hardware accellerated commands simulated
+ * Simulate Serial interface for printing logs.
  * Simulate support for basic arduino functionality like Delay function.
  * Implement sound output.
  * Joystick and button input simulation.
