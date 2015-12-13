@@ -54,6 +54,22 @@ static uint16_t GetColorByCombiningBuffer( const uint8_t* buffer, uint8_t mode, 
 {
 	uint16_t color = 0u;
 	switch( mode ) {
+	case 0:
+		if( !reversed ) {
+			// Normal RGB 
+			uint8_t data = *buffer;
+			color = (data&0xe0)<<8u;
+			color |= (data&0x1c) << 6u;
+			color |= (data&0x3) << 3u;
+		} else {
+			// Revered, BGR
+			uint8_t data = *buffer;
+			color = (data&0x03)<<14u; // R
+			color |= (data&0x1c) << 6u;		// G
+			color |= (data&0xe0) >> 2u;		// B
+		}
+		break;
+
 	case 1:
 		{
 			uint8_t b0 = *buffer;
@@ -100,49 +116,28 @@ void SimTinyScreen::WriteDataByte( uint8_t data )
 	bool writeColor = false;
 	uint16_t finalColor; 
 
-	if( colorMode == 0 ) {
-		// 256 color mode
-		if( !reverseColors ) {
-			// Normal RGB 
-			finalColor = (data&0xe0)<<8u;
-			finalColor |= (data&0x1c) << 6u;
-			finalColor |= (data&0x3) << 3u;
-		} else {
-			// Revered, BGR
-			finalColor = (data&0x03)<<14u; // R
-			finalColor |= (data&0x1c) << 6u;		// G
-			finalColor |= (data&0xe0) >> 2u;		// B
-		}
+	if( colorMode > 2 )
+	{
+		fprintf( stderr, "Invalid color mode." );
+		return;
+	}
+
+	tmpColorBuffer[colorWriteCounter++] = data;
+	// By coincidence, the colormode is the same as bytes required per color -1.
+	if( colorWriteCounter > colorMode )
+	{
+		finalColor = GetColorByCombiningBuffer(tmpColorBuffer, colorMode, reverseColors);
 		writeColor = true;
-	} else if( colorMode == 1 ) {
-		// Two bytes per pixel
-		if( colorWriteCounter < 1) {
-			tmpColorBuffer[colorWriteCounter++] = data;
-		} else {
-			tmpColorBuffer[colorWriteCounter] = data;
-			finalColor = GetColorByCombiningBuffer(tmpColorBuffer, colorMode, reverseColors);
-			writeColor = true;
-		}
-	} else {
-		// colorMode == 2
-		// Three bytes per pixel
-		if( colorWriteCounter < 2 ) {
-			tmpColorBuffer[colorWriteCounter++] = data;
-		} else {
-			tmpColorBuffer[colorWriteCounter++] = data;
-			finalColor = GetColorByCombiningBuffer(tmpColorBuffer, colorMode, reverseColors);
-			writeColor = true;
-		}
 	}
 
 	if( writeColor ) {
-
 		uint16_t index;
 		// Column addressing bit, if set, reverse lines.
-		if( colorModeRemapReg & (1u<<1) )
+		if( colorModeRemapReg & (1u<<1) ) {
 			index = rowPtr * 96 + (95-columnPtr);
-		else
+		} else {
 			index = rowPtr * 96 + columnPtr;
+		}
 		screenBuffer[index] = finalColor;
 		colorWriteCounter = 0;
 
