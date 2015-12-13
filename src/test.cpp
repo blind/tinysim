@@ -38,11 +38,6 @@ static struct Star stars[STAR_COUNT];
 static uint16_t myFrameBuffer [96*64];
 
 
-static void clear_screen()
-{
-	memset( myFrameBuffer, 0, sizeof(myFrameBuffer ) );
-}
-
 static void DrawStars()
 {
 	struct Star *star = stars;
@@ -81,7 +76,7 @@ static void SendFrameBufferToDisplay()
 
 static void fill_with_colors()
 {
-	uint16_t color;
+	uint16_t color = 0;
 	for( int row = 0; row < 64; ++row )
 	{
 		for( int col = 0; col < 96; ++col )
@@ -97,7 +92,6 @@ static void fill_with_colors()
 
 void loop()
 {
-	clear_screen();
 	fill_with_colors();
 	DrawStars();
 	SendFrameBufferToDisplay();
