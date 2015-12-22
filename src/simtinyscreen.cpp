@@ -31,10 +31,11 @@ void SimTinyScreen::i2cWriteData( uint8_t data )
 }
 
 
-uint8_t SimTinyScreen::i2cReadData( )
+uint8_t SimTinyScreen::i2cReadData( uint8_t reg )
 {
-	busState ^= 1;
-	return regs[regIdx]; // Upper bits are buttons, 
+	// This is just a guess on how it works.
+	busState = 0;
+	return regs[reg]; // Upper bits are buttons, 
 }
 
 uint8_t SimTinyScreen::spiSlaveWrite( uint8_t data )

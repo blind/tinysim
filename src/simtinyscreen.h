@@ -22,7 +22,7 @@ public:
 
 	// I2C Slave 
 	virtual void i2cWriteData( uint8_t );
-	virtual uint8_t i2cReadData( ) ;
+	virtual uint8_t i2cReadData( uint8_t ) ;
 
 
 private:
