@@ -1,13 +1,12 @@
 #ifndef __ARDUINO_H__
 #define __ARDUINO_H__
 
-#include <stdint.h>
+#include <cstdint>
 #include <stddef.h>
+#include <cstdlib>
 
 #include <inttypes.h>
 
-
-#define abs(x) ((x)>0?(x):-(x))
 
 #define _BV(x) (1u<<(x))
 

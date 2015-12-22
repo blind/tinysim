@@ -365,8 +365,9 @@ void SimTinyScreen::ExecuteCommandInBuffer()
 		printf("SSD1331 command not implemented: $%02x", command);
 		{
 			int i = 1; 
-			while( i < bufferIndex )
+			while( i < bufferIndex ) {
 				printf(", $%02x", commandBuffer[i++] );
+			}
 			printf("\n" );
 			
 		}
