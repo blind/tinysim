@@ -1,7 +1,7 @@
 #ifndef __WIRE_H__
 #define __WIRE_H__
 
-#include <stdint.h>
+#include <cstdint>
 #include <unordered_map>
 
 class II2CSlaveDevice

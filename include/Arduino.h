@@ -2,7 +2,7 @@
 #define __ARDUINO_H__
 
 #include <cstdint>
-#include <stddef.h>
+#include <cstddef>
 #include <cstdlib>
 
 #include <inttypes.h>
