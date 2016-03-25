@@ -34,8 +34,7 @@ different setups of hardware.
 
 ## Building
 
-Requires [CMake >=3.4](https://cmake.org/). The `CMakeLists.txt` file is
-located in the `build` directory.
+Requires [CMake >=3.4](https://cmake.org/).
 
 * **Windows** : See https://cmake.org/runningcmake/
 * **Linux**, **BSD**, **OSX** : See below
