@@ -1,4 +1,4 @@
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -113,13 +113,13 @@ static void TinySimBlit16( const uint16_t* buffer )
 
 	for(int row = 0 ; row < surface->h; ++row )
 	{
-		uint32_t *rowData = frameBuffer; 
+		uint32_t *rowData = frameBuffer;
 		for( int x = 0 ; x < surface->w; ++x )
 		{
 			uint16_t pixelData = *buffer++;
 			// We need to convert the pixel data here.
-			// Since I'm not sure about the pixel format 
-			// on the Tiny Arcade, I will pretend that I 
+			// Since I'm not sure about the pixel format
+			// on the Tiny Arcade, I will pretend that I
 			// know
 
 			uint8_t r = (pixelData>>8) & 0xf8;
@@ -138,7 +138,7 @@ static void TinySimBlit8( const uint8_t* buffer )
 
 	for(int row = 0 ; row < surface->h; ++row )
 	{
-		uint32_t *rowData = frameBuffer; 
+		uint32_t *rowData = frameBuffer;
 		for( int x = 0 ; x < surface->w; ++x )
 		{
 			uint16_t pixelData = *buffer++;
@@ -191,4 +191,3 @@ static void TinySimQuit()
 
 	SDL_Quit();
 }
-
