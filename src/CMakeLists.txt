@@ -8,6 +8,7 @@ set(SRCS
     simwire.cpp
     spisim.cpp
     tinysim.cpp
+    TinyScreen.cpp
 )
 
 set(HEADERS
@@ -18,6 +19,3 @@ set(HEADERS
 add_library(tinysim STATIC ${SRCS} ${HEADERS})
 set_property(TARGET tinysim PROPERTY CXX_STANDARD 11)
 set_property(TARGET tinysim PROPERTY CXX_STANDARD_REQUIRED true)
-
-add_executable(tinytest test.cpp)
-target_link_libraries(tinytest tinysim ${SDL2_LIBRARY})

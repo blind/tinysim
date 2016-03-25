@@ -28,13 +28,13 @@ SimSerial Serial;
 SimSPI SPI;
 SimWire Wire;
 
-static SimTinyScreen display;
+static SimTinyScreen simdisplay;
 
 int main(void)
 {
 	printf("Starting TinySim\n");
-	SPI.AddDevice( &display );
-	Wire.AddDevice( &display, 0x20 );
+	SPI.AddDevice( &simdisplay );
+	Wire.AddDevice( &simdisplay, 0x20 );
 
 	int result = TinySimRun( );
 
@@ -64,7 +64,7 @@ int TinySimRun( )
 		uint32_t start = SDL_GetTicks();
 		loop();
 
-		uint16_t* dispBuff = display.GetScreenBuffer();
+		uint16_t* dispBuff = simdisplay.GetScreenBuffer();
 		TinySimBlit16( dispBuff );
 
 		SDL_Surface *dstSurface = SDL_GetWindowSurface(window);
