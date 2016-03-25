@@ -93,18 +93,18 @@ const uint8_t GPIO_ADDR = 0x20;
 
 typedef struct
 {
-	const uint8_t width;
-	const uint16_t offset;
+    const uint8_t width;
+    const uint16_t offset;
 
 } FONT_CHAR_INFO;
 
 typedef struct
 {
-	const unsigned char height;
-	const char startCh;
-	const char endCh;
-	const FONT_CHAR_INFO*	charDesc;
-	const unsigned char* bitmap;
+    const unsigned char height;
+    const char startCh;
+    const char endCh;
+    const FONT_CHAR_INFO* charDesc;
+    const unsigned char* bitmap;
 
 } FONT_INFO;
 
