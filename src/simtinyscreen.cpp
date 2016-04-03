@@ -18,6 +18,8 @@ SimTinyScreen::SimTinyScreen()
 
 	columnPtr = 0;
 	columnEnd = 0;
+
+	expectedByteCount_ = -1;
 }
 
 void SimTinyScreen::i2cWriteData( uint8_t data )
@@ -35,7 +37,7 @@ uint8_t SimTinyScreen::i2cReadData( uint8_t reg )
 {
 	// This is just a guess on how it works.
 	busState = 0;
-	return regs[reg]; // Upper bits are buttons, 
+	return regs[reg]; // Upper bits are buttons,
 }
 
 uint8_t SimTinyScreen::spiSlaveWrite( uint8_t data )
@@ -55,7 +57,7 @@ static uint16_t GetColorByCombiningBuffer( const uint8_t* buffer, uint8_t mode, 
 	switch( mode ) {
 	case 0:
 		if( !reversed ) {
-			// Normal RGB 
+			// Normal RGB
 			uint8_t data = *buffer;
 			color = (data&0xe0)<<8u;
 			color |= (data&0x1c) << 6u;
@@ -84,7 +86,7 @@ static uint16_t GetColorByCombiningBuffer( const uint8_t* buffer, uint8_t mode, 
 		}
 		break;
 
-	case 2: 
+	case 2:
 		{
 			uint8_t b0 = *buffer;
 			uint8_t b1 = *(buffer+1);
@@ -112,7 +114,7 @@ void SimTinyScreen::WriteDataByte( uint8_t data )
 	uint8_t colorMode = (colorModeRemapReg >> 6) & 3u;
 	bool reverseColors = 0 != (colorModeRemapReg & (1u<<2));
 	bool writeColor = false;
-	uint16_t finalColor; 
+	uint16_t finalColor;
 
 	if( colorMode > 2 )
 	{
@@ -165,7 +167,7 @@ void SimTinyScreen::WriteCommandByte( uint8_t data )
 {
 	commandBuffer[bufferIndex++] = data;
 
-	if( expectedByteCount_ == 0 )
+	if( expectedByteCount_ < 0 )
 	{
 		switch( data )
 		{
@@ -308,32 +310,31 @@ void SimTinyScreen::WriteCommandByte( uint8_t data )
 
 		default:
 			// Unknown command, what to do?
+			expectedByteCount_ = -1;
 			break;
-		}	
+		}
 	}
-
 
 	// TODO: Save bytes to buffer. execute command when expected byte count is 0.
 	if( expectedByteCount_ == 0 )
 	{
 		ExecuteCommandInBuffer( );
 		bufferIndex = 0;
-	} else {
-		--expectedByteCount_;
 	}
+	--expectedByteCount_;
 }
 
 
 void SimTinyScreen::ExecuteCommandInBuffer()
 {
 	auto buffPtr = commandBuffer;
-	auto command = *buffPtr++; 
+	auto command = *buffPtr++;
 
 	switch( command )
 	{
 	case 0x15:
 		{
-			// Set column address 
+			// Set column address
 			columnStart = *buffPtr++;
 			columnEnd = *buffPtr++;
 			columnPtr = columnStart;
@@ -344,7 +345,7 @@ void SimTinyScreen::ExecuteCommandInBuffer()
 
 	case 0x75:
 		{
-			// Set row address 
+			// Set row address
 			rowStart = *buffPtr++;
 			rowEnd = *buffPtr++;
 			rowPtr = rowStart;
@@ -357,6 +358,7 @@ void SimTinyScreen::ExecuteCommandInBuffer()
 		{
 			// Remap and color depth settings.
 			colorModeRemapReg = *buffPtr;
+			printf("set color remap: $%02x\n", colorModeRemapReg);
 			colorWriteCounter = 0u;
 		}
 		break;
@@ -365,12 +367,11 @@ void SimTinyScreen::ExecuteCommandInBuffer()
 	default:
 		printf("SSD1331 command not implemented: $%02x", command);
 		{
-			int i = 1; 
+			int i = 1;
 			while( i < bufferIndex ) {
 				printf(", $%02x", commandBuffer[i++] );
 			}
 			printf("\n" );
-			
 		}
 		break;
 	}

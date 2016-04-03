@@ -20,7 +20,7 @@ public:
 	virtual uint8_t spiSlaveWrite( uint8_t );
 
 
-	// I2C Slave 
+	// I2C Slave
 	virtual void i2cWriteData( uint8_t );
 	virtual uint8_t i2cReadData( uint8_t ) ;
 
@@ -41,9 +41,9 @@ private:
 
 	// Control register
 
-	uint8_t expectedByteCount_;
+	int8_t expectedByteCount_;
 
-	uint8_t currentCommand; // 
+	uint8_t currentCommand; //
 
 	uint8_t colorWriteCounter;
 	uint16_t finalColor;
@@ -71,4 +71,3 @@ private:
 };
 
 #endif
-

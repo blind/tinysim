@@ -1,16 +1,16 @@
 # Tiny Arcade Simulator
 
-This is an embryo of a simulator for Tiny Arcade, to simplify development 
+This is an embryo of a simulator for Tiny Arcade, to simplify development
 of new and cool games.
 
 ## Goal
 
-The goal is to be able to compile and run the same code for both the real 
-TinyArcade hardware and the simulator. 
+The goal is to be able to compile and run the same code for both the real
+TinyArcade hardware and the simulator.
 
 ## Implementation
 
-To allow users on different platforms I chose to implemented it using SDL2. 
+To allow users on different platforms I chose to implemented it using SDL2.
 
 
 ### Current status
@@ -29,5 +29,19 @@ To allow users on different platforms I chose to implemented it using SDL2.
 ### Long term idea
 
 While coding, I realised that I can make this much more dynamic and usefull.
-Having a library of modules and a UI, it would be possible to simulate many 
+Having a library of modules and a UI, it would be possible to simulate many
 different setups of hardware.
+
+## Building
+
+Requires [CMake >=3.4](https://cmake.org/).
+
+* **Windows** : See https://cmake.org/runningcmake/
+* **Linux**, **BSD**, **OSX** : See below
+
+```bash
+mkdir -p build
+cd build
+cmake ..
+make
+```
