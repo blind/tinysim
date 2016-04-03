@@ -22,13 +22,16 @@ SimSPI::SimSPI()
 {
 	devicesArraySize = 4;
 	devices = new ISPIDevice*[devicesArraySize];
+	for (int i = 0; i < devicesArraySize; i++) {
+		devices[i] = NULL;
+	}
 }
 
 
 void SimSPI::AddDevice( ISPIDevice *device )
 {
 	int i = 0;
-	while( (i < devicesArraySize) && (devices[i] == NULL) )
+	while( (i < devicesArraySize) && (devices[i] != NULL) )
 		i++;
 
 	if( i < devicesArraySize )
@@ -112,5 +115,3 @@ uint16_t millis()
 	auto now = std::chrono::high_resolution_clock::now().time_since_epoch();
 	return (uint16_t)std::chrono::duration_cast<std::chrono::milliseconds>(now).count();
 }
-
-
